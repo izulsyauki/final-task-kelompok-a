@@ -149,6 +149,11 @@ app.get('/add-heroes', async (req, res) => {
         const types = result.rows;
         const user = req.session.user;
 
+        if(!user){
+            console.log("Anda harus login untuk melanjutkan");
+            res.redirect("/login");
+        }
+
         res.render('add-heroes', { types, user })
     } catch (error) {
         console.log("Error memuat data add heroes", error);
@@ -185,12 +190,33 @@ app.get('/add-type', (req, res) => {
     try{
         const user = req.session.user;
 
+        if(!user){
+            console.log("Anda harus login untuk melanjutkan!")
+            res.redirect("/login");
+        }
+
         res.render('add-type', { user });
     } catch (error) {
-
+        console.log("Gagal memuat type, ", error);
+        res.send(500).status("Something went wrong");
     }
+});
 
-    
+app.post('/add-type', async (req, res) => {
+    try{
+        const user = req.session.user;
+        const { 'input-name': name } = req.body;
+
+        const queryText = `INSERT INTO type_tb(name) VALUES($1)`;
+        const values = [name];
+        const result = await pool.query(queryText, values);
+
+        console.log("ini type baru bang: ", result)
+        res.redirect('/');
+    } catch (error) {
+        console.log("Gagal memuat type, ", error);
+        res.send(500).status("Something went wrong");
+    }
 });
 
 app.get('/detail/:id', async (req, res) => {
