@@ -16,15 +16,17 @@
 <body>
     {{>navbar}}
 
-    <section class="d-flex m-5 mt-2">
-        <div class="card" style="width: 15rem;" data-bs-theme="dark">
-            <img src="../assets/images/Luffy-1.jpg" class="card-img-top object-fit-cover pt-3 p-2 pb-0 w-auto" alt="-image-heroes">
+    <section class="d-flex justify-content-center p-3 pt-0 m-5 mt-4 gap-5 flex-wrap">
+        {{#each heroes}}
+        <div class="card" style="width: 16rem;" data-bs-theme="dark">
+            <img src="{{this.photo}}" class="card-img-top object-fit-cover pt-3 p-2 pb-0 w-auto" alt="-image-heroes" style="height: 240px;">
             <div class="card-body">
-                <h4 class="card-title fw-bold">Luffy</h4>
-                <p class="card-text">Paramecia Special.</p>
-                <a href="#" class="btn btn-danger w-100 fw-bold">Detail</a>
+                <h4 class="card-title fw-bold">{{this.hero_name}}</h4>
+                <p class="card-text">{{this.type_name}}</p>
+                <a href="/detail/{{this.id}}" class="btn btn-danger w-100 fw-bold">Detail</a>
             </div>
         </div>
+        {{/each}}
     </section>
 
 

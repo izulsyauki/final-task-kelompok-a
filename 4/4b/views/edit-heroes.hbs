@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Piece Add Type</title>
+    <title>One Piece Edit Heroes</title>
 
     <link rel="stylesheet" href="/assets/styles/style.css">
 
@@ -18,11 +18,23 @@
     {{>navbar}}
 
     <section class="d-flex p-5 m-5 bg-dark flex-column gap-3 w-75 justify-content-center align-self-center rounded-4">
-        <h2 class="h2 text-light text-center mb-3 bg-dark">Add Type</h2>
-        <form class="d-flex gap-3 flex-column w-75 align-self-center bg-dark" data-bs-theme="dark">
+        <h2 class="h2 text-light text-center mb-3 bg-dark">Edit Heroes</h2>
+        <form action="/add-heroes" method="post" enctype="multipart/form-data" class="d-flex gap-3 flex-column w-75 align-self-center bg-dark" data-bs-theme="dark">
             <div class="mb-3 bg-dark">
                 <label for="input-name" class="form-label text-bg-dark">Name</label>
-                <input type="input-name" class="form-control" id="input-name-1">
+                <input type="input-name" class="form-control" id="input-name" name="input-name">
+            </div>
+            <div class="mb-3 bg-dark">
+                <label for="select-type" class="form-label text-bg-dark">Type</label>
+                <select id="select-type" class="form-select" name="select-type">
+                    {{#each types}}
+                    <option value="{{this.id}}">{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="mb-3 bg-dark">
+                <label for="input-image" class="form-label text-bg-dark">Image</label>
+                <input class="form-control" type="file" id="input-image" name="input-image">
             </div>
             <button type="submit" class="btn btn-danger fw-bold">Submit</button>
         </form>

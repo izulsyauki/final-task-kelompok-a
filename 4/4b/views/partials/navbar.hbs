@@ -7,6 +7,15 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <div class="d-flex ms-auto gap-3">
+                {{#if user}}
+                <a href="/add-heroes"></a>
+                <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Add Heroes</button>
+                </a>
+
+                <a href="/add-type">
+                    <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Add Type</button>
+                </a>
+                {{else}}
                 <a href="/login">
                     <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Login</button>
                 </a>
@@ -14,15 +23,7 @@
                 <a href="/register">
                     <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Register</button>
                 </a>
-
-                <a href="/add-heroes">
-                    <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Add Heroes</button>
-                </a>
-
-                <a href="/add-type">
-                    <button class="btn btn-warning btn-orange fw-bold text-light" type="submit">Add Type</button>
-                </a>
-
+                {{/if}}
             </div>
         </div>
     </div>

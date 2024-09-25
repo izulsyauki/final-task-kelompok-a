@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Piece Heroes</title>
+    <title>One Piece Heroes Login</title>
 
     <link rel="stylesheet" href="/assets/styles/style.css">
 
@@ -19,15 +19,15 @@
 
     <section class="d-flex p-5 m-5 bg-dark flex-column gap-3 w-75 justify-content-center align-self-center rounded-4">
         <h2 class="h2 text-light text-center mb-3">Login</h2>
-        <form class="d-flex gap-3 flex-column w-75 align-self-center bg-dark" data-bs-theme="dark">
+        <form action="/login" method="post" class="d-flex gap-3 flex-column w-75 align-self-center bg-dark" data-bs-theme="dark">
             <div class="mb-3 bg-dark">
                 <label for="input-username" class="form-label text-bg-dark">Username</label>
-                <input type="input-username" class="form-control bg-dark" id="input-username">
+                <input type="input-username" class="form-control bg-dark" id="username" name="username">
             </div>
 
             <div class="mb-3 bg-dark">
                 <label for="password" class="form-label text-bg-dark">Password</label>
-                <input type="paswword" class="form-control" id="password">
+                <input type="password" class="form-control" id="password" name="password">
             </div>
             <button type="submit" class="btn btn-danger fw-bold">Submit</button>
         </form>
