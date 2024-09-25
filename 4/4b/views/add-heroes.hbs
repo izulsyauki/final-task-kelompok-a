@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Piece Add Heroes</title>
+    <title>One Piece Add Hero</title>
 
     <link rel="stylesheet" href="/assets/styles/style.css">
 
@@ -18,11 +18,11 @@
     {{>navbar}}
 
     <section class="d-flex p-5 m-5 bg-dark flex-column gap-3 w-75 justify-content-center align-self-center rounded-4">
-        <h2 class="h2 text-light text-center mb-3 bg-dark">Add Heroes</h2>
+        <h2 class="h2 text-light text-center mb-3 bg-dark">Add Hero</h2>
         <form action="/add-heroes" method="post" enctype="multipart/form-data" class="d-flex gap-3 flex-column w-75 align-self-center bg-dark" data-bs-theme="dark">
             <div class="mb-3 bg-dark">
                 <label for="input-name" class="form-label text-bg-dark">Name</label>
-                <input type="input-name" class="form-control" id="input-name" name="input-name">
+                <input type="input-name" class="form-control" id="input-name" name="input-name" required>
             </div>
             <div class="mb-3 bg-dark">
                 <label for="select-type" class="form-label text-bg-dark">Type</label>
@@ -34,7 +34,7 @@
             </div>
             <div class="mb-3 bg-dark">
                 <label for="input-image" class="form-label text-bg-dark">Image</label>
-                <input class="form-control" type="file" id="input-image" name="input-image">
+                <input class="form-control" type="file" id="input-image" name="input-image" required>
             </div>
             <button type="submit" class="btn btn-danger fw-bold">Submit</button>
         </form>

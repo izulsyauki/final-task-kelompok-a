@@ -32,8 +32,8 @@
                 <div class="d-flex d-flex justify-content-end m-0 p-0">
                     <div class="d-flex gap-2 col-4 ms-auto">
                         {{#isOwner hero.user_id user.id}}
-                        <a href="/edit-heroes" class="btn btn-danger w-50 fw-bold">Edit</a>
-                        <a href="/detail" class="btn btn-danger w-50 fw-bold">Delete</a>
+                        <a href="/edit-heroes/{{hero.id}}" class="btn btn-danger w-50 fw-bold">Edit</a>
+                        <a href="/delete-heroes/{{hero.id}}" class="btn btn-danger w-50 fw-bold">Delete</a>
                         {{else}}
                         <a href="/" class="btn btn-danger w-100 fw-bold">Back</a>
                         {{/isOwner}}

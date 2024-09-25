@@ -147,13 +147,13 @@ app.get('/add-heroes', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM type_tb')
         const types = result.rows;
+        const user = req.session.user;
 
-        res.render('add-heroes', { types })
+        res.render('add-heroes', { types, user })
     } catch (error) {
         console.log("Error memuat data add heroes", error);
         res.status(500).send("Something went wrong");
     }
-
 });
 
 app.post('/add-heroes', upload.single('input-image'), async (req, res) => {
@@ -182,7 +182,15 @@ app.post('/add-heroes', upload.single('input-image'), async (req, res) => {
 });
 
 app.get('/add-type', (req, res) => {
-    res.render('add-type');
+    try{
+        const user = req.session.user;
+
+        res.render('add-type', { user });
+    } catch (error) {
+
+    }
+
+    
 });
 
 app.get('/detail/:id', async (req, res) => {
@@ -216,11 +224,80 @@ app.get('/detail/:id', async (req, res) => {
     }
 });
 
-app.get('/edit-heroes', async (req, res) => {
+app.get('/edit-heroes/:id', async (req, res) => {
     try {
-        res.render('edit-heroes')
+        const { id } = req.params;
+		const user = req.session.user;
+
+        if (!user){
+            console.log("Maaf anda harus login terlebih dahulu");
+            res.redirect("/");
+        }
+        
+        const typeHero = await pool.query('SELECT * FROM type_tb')
+        const types = typeHero.rows;
+
+        const queryText = `SELECT * FROM heroes_tb WHERE id = $1`;
+        const hero = await pool.query(queryText, [id])
+
+        if (hero.length === 0){
+            console.log("Error, Hero tidak ditemukan")
+            res.redirect("/");
+        }
+
+        res.render('edit-heroes', { hero: hero.rows[0], types, user })
     } catch (error) {
         console.log("Gagal memuat edit heroes: ", error);
+        res.status(500).send("Something went wrong");
+    }
+});
+
+app.post('/edit-heroes/:id', upload.single('input-image'), async (req, res) => {
+    try {
+        const { 'input-name': name, 'select-type': type_id } = req.body;
+        const { id } = req.params;
+        const photo = req.file ? req.file.path : null;
+
+        const queryText = `
+            UPDATE heroes_tb
+            SET name = $1,
+                type_id = $2,
+                photo = $3
+            WHERE id = $4
+            RETURNING *
+        ;`
+        const values = [name, type_id, photo, id];
+
+        const result = await pool.query(queryText, values);
+        const hero = result.rows[0];
+
+        console.log("Berhasil Mengedit Hero!", hero)
+        res.redirect('/');
+    } catch (error) {
+        console.log("Error edit heroes", error);
+        res.status(500).send("Something went wrong");
+    }
+});
+
+app.get('/delete-heroes/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const queryText = `SELECT * FROM heroes_tb WHERE id = $1`;
+
+        const result = await pool.query(queryText, [id]);
+
+        if(!result){
+            console.log("Tidak menemukan hero");
+            return res.redirect("/");
+        }
+
+        const queryDelete = "DELETE FROM heroes_tb where id = $1";
+        await pool.query(queryDelete, [id]); 
+
+        console.log("Sukses menghapus project");
+        res.redirect("/");
+    } catch (error) {
+        console.log("Gagal menghapus heroes, ", error);
         res.status(500).send("Something went wrong");
     }
 })
