@@ -62,6 +62,9 @@ hbs.registerHelper("isOwner", function (sessionUserId, HeroesUserId, options) {
         return options.inverse(this);
     }
 });
+hbs.registerHelper("eq", function(a, b) {
+    return a === b;
+});
 
 
 app.get('/', async (req, res) => {

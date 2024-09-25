@@ -17,7 +17,8 @@
 <body>
     {{>navbar}}
 
-    <section class="d-flex p-5 m-5 bg-dark flex-column gap-2 w-75 justify-content-center align-self-center rounded-4 h-100">
+    <section
+        class="d-flex p-5 m-5 bg-dark flex-column gap-2 w-75 justify-content-center align-self-center rounded-4 h-100">
         <h2 class="fw-bold text-center text-light">Hero Detail</h2>
         <hr class="text-light-emphasis">
         <div class="d-flex flex-column flex-md-row mt-2 gap-4">
@@ -27,7 +28,20 @@
             <div class="card-body d-flex flex-column w-100 gap-2">
                 <h3 class="card-title fw-bold text-light">Hero Name: {{hero.hero_name}}</h3>
                 <p class="card-text mt-0 mb-1 text-start text-secondary">Created by: {{hero.user_name}}</p>
-                <p class="card-text text-light" style="height: 40%;">Devil Fruit: {{hero.type_name}}</p>
+                <p class="card-text fw-bold text-light" style="height: 40%;">
+                    Devil Fruit:
+                    {{#if (eq hero.type_name 'Logia')}}
+                    <span class="text-primary">{{hero.type_name}}</span>
+                    {{else if (eq hero.type_name 'Paramecia')}}
+                    <span class="text-success">{{hero.type_name}}</span>
+                    {{else if (eq hero.type_name 'Zoan')}}
+                    <span class="text-warning">{{hero.type_name}}</span>
+                    {{else if (eq hero.type_name 'Paramecia Special')}}
+                    <span class="text-danger">{{hero.type_name}}</span>
+                    {{else}}
+                    <span class="text-secondary">{{hero.type_name}}</span>
+                    {{/if}}
+                </p>
 
                 <div class="d-flex d-flex justify-content-end m-0 p-0">
                     <div class="d-flex gap-2 col-4 ms-auto">
@@ -48,4 +62,5 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
 </body>
+
 </html>
