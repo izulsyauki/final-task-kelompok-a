@@ -1,19 +1,25 @@
 * {
-     background-color: #2B3035;
-     margin: 0;
-     padding: 0;
-     box-sizing: border-box;
- }
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
- .btn-orange {
+body {
+    background-color: #2b3035 !important;
+    min-height: 100vh;
+    margin-top: 56px !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+.btn-orange {
     background-color: #f76613 !important;
     border: #f76613 !important;
     font-weight: bold !important;
     color: white !important;
- }
+}
 
- .btn-orange:hover {
+.btn-orange:hover {
     background-color: #ff7627 !important;
     border: #ff7627 !important;
- }
-
+}
