@@ -23,3 +23,29 @@ body {
     background-color: #ff7627 !important;
     border: #ff7627 !important;
 }
+
+.alert-container {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: auto;
+    max-width: 500px;
+  }
+  
+  /* Animasi alert */
+  @keyframes fadeOutUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+  
+  .fade-out {
+    animation: fadeOutUp 1s forwards;
+  }

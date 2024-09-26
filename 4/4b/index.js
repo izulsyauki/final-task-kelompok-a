@@ -4,6 +4,9 @@ const { Pool } = require('pg');
 const path = require('path');
 const session = require('express-session');
 const multer = require('multer');
+const flash = require('express-flash');
+const cookieParser = require('cookie-parser');
+const { triggerAsyncId } = require('async_hooks');
 const app = express();
 const port = 5001;
 
@@ -53,6 +56,8 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false }
 }));
+app.use(flash());
+app.use(cookieParser());
 
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 hbs.registerHelper("isOwner", function (sessionUserId, HeroesUserId, options) {
@@ -62,7 +67,7 @@ hbs.registerHelper("isOwner", function (sessionUserId, HeroesUserId, options) {
         return options.inverse(this);
     }
 });
-hbs.registerHelper("eq", function(a, b) {
+hbs.registerHelper("eq", function (a, b) {
     return a === b;
 });
 
@@ -91,7 +96,16 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.render('login');
+    try {
+        const messageWarning = req.cookies.warning;
+        res.clearCookie("warning");
+
+        res.render('login', {messageWarning});
+    } catch (error) {
+        console.log("Gagal memual login, ", error);
+        req.flash("danger", "Gagal memuat login");
+        req.redirect("/");
+    }
 });
 
 app.post('/login', async (req, res) => {
@@ -112,19 +126,27 @@ app.post('/login', async (req, res) => {
                 email: user.email
             }
             console.log("data user login: ", req.session.user);
+            req.flash("success", "Anda berhasil login.")
             res.redirect('/');
         } else {
             console.log('error', 'username atau password salah');
+            req.flash("danger", "Username atau password salah")
             res.redirect('/login');
         }
     } catch (error) {
         console.log("Error login: ", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
     }
 });
 
 app.get('/register', (req, res) => {
-    res.render('register');
+    try {
+        res.render('register');
+    } catch (error) {
+        console.log("Gagal memuat register, ", error);
+        req.flash("danger", "Gagal memuat halaman register");
+        res.redirect("/");
+    }
 });
 
 app.post('/register', async (req, res) => {
@@ -139,10 +161,12 @@ app.post('/register', async (req, res) => {
         // cek data berhasil di input 
         console.log("Data berhasil diinput: ", result.rows[0]);
 
+        req.flash("success", "Berhasil register, silahkan untuk login")
         res.redirect('/login');
     } catch (error) {
         console.log("Error input data: ", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
@@ -152,15 +176,16 @@ app.get('/add-heroes', async (req, res) => {
         const types = result.rows;
         const user = req.session.user;
 
-        if(!user){
-            console.log("Anda harus login untuk melanjutkan");
+        if (!user) {
+            req.flash("warning", "Anda harus login untuk melanjutkan");
             res.redirect("/login");
         }
 
         res.render('add-heroes', { types, user })
     } catch (error) {
         console.log("Error memuat data add heroes", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
@@ -181,32 +206,35 @@ app.post('/add-heroes', upload.single('input-image'), async (req, res) => {
         const hero = result.rows[0];
 
         console.log("Berhasil Menambahkan Hero!", hero)
+        req.flash("success", "Berhasil Menambahkan Hero!")
         res.redirect('/');
     } catch (error) {
         console.log("Error add heroes", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 
 });
 
 app.get('/add-type', (req, res) => {
-    try{
+    try {
         const user = req.session.user;
 
-        if(!user){
-            console.log("Anda harus login untuk melanjutkan!")
+        if (!user) {
+            req.flash("warning", "Anda harus login untuk melanjutkan!")
             res.redirect("/login");
         }
 
         res.render('add-type', { user });
     } catch (error) {
         console.log("Gagal memuat type, ", error);
-        res.send(500).status("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
 app.post('/add-type', async (req, res) => {
-    try{
+    try {
         const user = req.session.user;
         const { 'input-name': name } = req.body;
 
@@ -215,10 +243,12 @@ app.post('/add-type', async (req, res) => {
         const result = await pool.query(queryText, values);
 
         console.log("ini type baru bang: ", result)
+        req.flash("success", "Berhasil Menambahkan Tipe DF Baru!")
         res.redirect('/');
     } catch (error) {
         console.log("Gagal memuat type, ", error);
-        res.send(500).status("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
@@ -249,35 +279,37 @@ app.get('/detail/:id', async (req, res) => {
         res.render('detail', { hero: hero[0], user });
     } catch (error) {
         console.log("Gagal memual detail: ", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
 app.get('/edit-heroes/:id', async (req, res) => {
     try {
         const { id } = req.params;
-		const user = req.session.user;
+        const user = req.session.user;
 
-        if (!user){
+        if (!user) {
             console.log("Maaf anda harus login terlebih dahulu");
             res.redirect("/");
         }
-        
+
         const typeHero = await pool.query('SELECT * FROM type_tb')
         const types = typeHero.rows;
 
         const queryText = `SELECT * FROM heroes_tb WHERE id = $1`;
         const hero = await pool.query(queryText, [id])
 
-        if (hero.length === 0){
-            console.log("Error, Hero tidak ditemukan")
+        if (hero.length === 0) {
+            req.flash("danger", "Error, Hero tidak ditemukan")
             res.redirect("/");
         }
 
         res.render('edit-heroes', { hero: hero.rows[0], types, user })
     } catch (error) {
         console.log("Gagal memuat edit heroes: ", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
@@ -301,33 +333,59 @@ app.post('/edit-heroes/:id', upload.single('input-image'), async (req, res) => {
         const hero = result.rows[0];
 
         console.log("Berhasil Mengedit Hero!", hero)
+        req.flash("success", "Berhasil Mengedit Hero!")
         res.redirect('/');
     } catch (error) {
         console.log("Error edit heroes", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
     }
 });
 
 app.get('/delete-heroes/:id', async (req, res) => {
-    try{
+    try {
         const { id } = req.params;
         const queryText = `SELECT * FROM heroes_tb WHERE id = $1`;
 
         const result = await pool.query(queryText, [id]);
 
-        if(!result){
-            console.log("Tidak menemukan hero");
+        if (!result) {
+            req.flash("danger", "Tidak menemukan hero");
             return res.redirect("/");
         }
 
         const queryDelete = "DELETE FROM heroes_tb where id = $1";
-        await pool.query(queryDelete, [id]); 
+        await pool.query(queryDelete, [id]);
 
         console.log("Sukses menghapus project");
+        req.flash("success", "Sukses menghapus project");
         res.redirect("/");
     } catch (error) {
         console.log("Gagal menghapus heroes, ", error);
-        res.status(500).send("Something went wrong");
+        req.flash("danger", "Something went wrong");
+        res.redirect("/");
+    }
+});
+
+app.get('/logout', async (req, res) => {
+    try {
+        res.cookie("warning", "You're Logged out, Please Login to Continue!", {
+            httpOnly: true,
+            maxAge: 5000,
+        });
+
+        req.session.destroy((err) => {
+            if (err) {
+                req.flash("error", "Logout failed, Try again!");
+                return res.redirect("/");
+            }
+
+            res.redirect("/login");
+        });
+    } catch (error) {
+        console.log("Error logout", error)
+        req.flash("error", "Something went wrong");
+        res.redirect("/");
     }
 })
 
