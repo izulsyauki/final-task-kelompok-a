@@ -15,7 +15,7 @@
 // dumbjos pot 21.1% min belanja 50k, maks disk 20k
 // dumbtaps pot 30% min belanja 80k, maks disk 40k
 
-let totalBeli = 50000;
+let totalBeli = 100000;
 
 function hitungVoucher(voucher, uangBayar) {
     let minimalBeli = 0;
@@ -31,8 +31,10 @@ function hitungVoucher(voucher, uangBayar) {
         potonganPersen = 30;
         maksPotongan = 40000;
     } else {
-        return "voucher yang digunakan tidak valid";
+        return console.log("voucher yang digunakan tidak valid"); 
     }
+
+    if (totalBeli < minimalBeli) return console.log (`Total pembelian tidak memenuhi syarat pembelian yaitu sebesar: ${minimalBeli}`);
 
     let potongan = (potonganPersen / 100) * totalBeli;
 
@@ -52,4 +54,4 @@ function hitungVoucher(voucher, uangBayar) {
     return console.log(output);
 }
 
-hitungVoucher("DumbWaysMantap", 50000);
+hitungVoucher("DumbWaysMantap", 100000);
