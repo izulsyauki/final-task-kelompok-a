@@ -16,7 +16,7 @@ function bilanganPrima(n) {
 
 console.log(bilanganPrima(17));
 
-function segitigaSiku(panjang) {
+function drawSikuSiku(panjang) {
     if ( panjang < 0 || 10 < panjang ) return console.log("nilai panjang harus diantara 1 sampai 9");
     let bilangan = 2;
 
@@ -34,4 +34,6 @@ function segitigaSiku(panjang) {
     }
 }
 
-segitigaSiku(9);
+drawSikuSiku(7);
+console.log("\n =============================== \n");
+drawSikuSiku(9);
